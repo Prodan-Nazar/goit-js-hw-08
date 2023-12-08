@@ -63,9 +63,11 @@ const images = [
     description: "Lighthouse Coast Sea",
   },
 ];
-const galleryContainer = document.querySelector(".gallery");
-const galleryItemsMarkup = images.map(({ preview, original, description }) => {
-  return `
+
+const galleryContainer = document.querySelector('.gallery');
+
+const galleryMarkup = images.reduce((markup, { preview, original, description }) => {
+  return markup + `
     <li class="gallery-item">
       <a class="gallery-link" href="${original}">
         <img
@@ -73,34 +75,43 @@ const galleryItemsMarkup = images.map(({ preview, original, description }) => {
           src="${preview}"
           data-source="${original}"
           alt="${description}"
-          width="360"
-          height="200"
         />
       </a>
-    </li>
-  `;
-}).join("");
-galleryContainer.insertAdjacentHTML("beforeend", galleryItemsMarkup);
-galleryContainer.addEventListener("click", onGalleryContainerClick);
-function onGalleryContainerClick(event) {
+    </li>`;
+}, '');
+
+galleryContainer.insertAdjacentHTML('beforeend', galleryMarkup);
+
+galleryContainer.addEventListener('click', onGalleryItemClick);
+
+function onGalleryItemClick(event) {
   event.preventDefault();
-  if (event.target.nodeName !== "IMG") {
-    return;
-  }
-  const largeImageURL = event.target.dataset.source;
-  event.target.classList.add("gallery-image--enlarged");
-  openModal(largeImageURL);
+
+  const target = event.target;
+  if (target.nodeName !== 'IMG') return;
+
+  const largeImageURL = target.dataset.source;
+  console.log('Large Image URL:', largeImageURL);
 }
-function openModal(imageURL) {
+
+function onGalleryItemClick(event) {
+  event.preventDefault();
+
+  const target = event.target;
+  if (target.nodeName !== 'IMG') return;
+
+  const largeImageURL = target.dataset.source;
+
   const instance = basicLightbox.create(`
-    <img src="${imageURL}" width="1112" height="640">
+    <img src="${largeImageURL}" width="800" height="600">
   `);
+
   instance.show();
-  document.addEventListener("keydown", closeModalOnEscape);
 }
-function closeModalOnEscape(event) {
-  if (event.code === "Escape") {
+
+document.addEventListener('keydown', (event) => {
+  if (event.key === 'Escape') {
     basicLightbox.close();
-    document.removeEventListener("keydown", closeModalOnEscape);
   }
-}
+});
+
