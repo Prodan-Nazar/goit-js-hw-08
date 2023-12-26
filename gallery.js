@@ -1,4 +1,4 @@
-
+// gallery.js
 const gallery = document.querySelector('.gallery');
 const images = [
   {
@@ -66,7 +66,7 @@ const images = [
   },
 ];
 
-
+// Function to create gallery items
 function createGalleryItem({ preview, original, description }) {
   const galleryItem = document.createElement('li');
   galleryItem.classList.add('gallery-item');
@@ -87,13 +87,16 @@ function createGalleryItem({ preview, original, description }) {
   return galleryItem;
 }
 
+// Function to render gallery
 function renderGallery(images) {
   const galleryItems = images.map(createGalleryItem);
   gallery.append(...galleryItems);
 }
 
+// Initial rendering of the gallery
 renderGallery(images);
 
+// Event listener for opening modal
 gallery.addEventListener('click', (event) => {
   event.preventDefault();
 
@@ -106,6 +109,7 @@ gallery.addEventListener('click', (event) => {
 
     instance.show();
 
+    // Event listener for closing modal on Esc key press
     document.addEventListener('keydown', (e) => {
       if (e.key === 'Escape') {
         instance.close();
