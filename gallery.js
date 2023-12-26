@@ -1,3 +1,5 @@
+
+const gallery = document.querySelector('.gallery');
 const images = [
   {
     preview:
@@ -64,54 +66,50 @@ const images = [
   },
 ];
 
-const galleryContainer = document.querySelector('.gallery');
 
-const galleryMarkup = images.reduce((markup, { preview, original, description }) => {
-  return markup + `
-    <li class="gallery-item">
-      <a class="gallery-link" href="${original}">
-        <img
-          class="gallery-image"
-          src="${preview}"
-          data-source="${original}"
-          alt="${description}"
-        />
-      </a>
-    </li>`;
-}, '');
+function createGalleryItem({ preview, original, description }) {
+  const galleryItem = document.createElement('li');
+  galleryItem.classList.add('gallery-item');
 
-galleryContainer.insertAdjacentHTML('beforeend', galleryMarkup);
+  const link = document.createElement('a');
+  link.classList.add('gallery-link');
+  link.href = original;
 
-galleryContainer.addEventListener('click', onGalleryItemClick);
+  const image = document.createElement('img');
+  image.classList.add('gallery-image');
+  image.src = preview;
+  image.setAttribute('data-source', original);
+  image.alt = description;
 
-function onGalleryItemClick(event) {
-  event.preventDefault();
+  link.appendChild(image);
+  galleryItem.appendChild(link);
 
-  const target = event.target;
-  if (target.nodeName !== 'IMG') return;
-
-  const largeImageURL = target.dataset.source;
-  console.log('Large Image URL:', largeImageURL);
+  return galleryItem;
 }
 
-function onGalleryItemClick(event) {
-  event.preventDefault();
-
-  const target = event.target;
-  if (target.nodeName !== 'IMG') return;
-
-  const largeImageURL = target.dataset.source;
-
-  const instance = basicLightbox.create(`
-    <img src="${largeImageURL}" width="800" height="600">
-  `);
-
-  instance.show();
+function renderGallery(images) {
+  const galleryItems = images.map(createGalleryItem);
+  gallery.append(...galleryItems);
 }
 
-document.addEventListener('keydown', (event) => {
-  if (event.key === 'Escape') {
-    basicLightbox.close();
+renderGallery(images);
+
+gallery.addEventListener('click', (event) => {
+  event.preventDefault();
+
+  if (event.target.nodeName === 'IMG') {
+    const largeImageURL = event.target.dataset.source;
+
+    const instance = basicLightbox.create(`
+      <img src="${largeImageURL}" width="800" height="600">
+    `);
+
+    instance.show();
+
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape') {
+        instance.close();
+      }
+    });
   }
 });
-
